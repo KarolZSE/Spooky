@@ -16,15 +16,34 @@
 <script>
     const GhostBar = document.getElementById("GhostBar");
     const GhostBarCont = GhostBar.getContext("2d");
+    let test = 0;
+    let test2 = 0;
+    let offset = 0;
+    let temp = 1;
 
     // https://www.w3schools.com/graphics/canvas_gradients.asp
-    var gradient = GhostBarCont.createLinearGradient(80, 0, 100, 0);
-    gradient.addColorStop(0, "red");
-    gradient.addColorStop(0.5, "green");
-    gradient.addColorStop(1, "red");
+    function DrawTheGradient() {
+        var gradient = GhostBarCont.createLinearGradient(80 + offset, 0, 100 + offset, 0);
+        gradient.addColorStop(0, "red");
+        gradient.addColorStop(0.5, "green");
+        gradient.addColorStop(1, "red");
 
-    GhostBarCont.fillStyle = gradient;
-    GhostBarCont.fillRect(0, 0, 200, 50);
+        GhostBarCont.fillStyle = gradient;
+        GhostBarCont.fillRect(0, 0, GhostBar.width, GhostBar.height);
+    }
+
+    DrawTheGradient();
+    setInterval(() => {
+        offset += temp;
+        if (offset >= 110) {
+            temp = -1;
+            // delete the other if and change temp = -10; in to, 
+            // offset = -90, if you want to make it go around.
+        } else if (offset <= -90) {
+            temp = 1;
+        }
+        DrawTheGradient();
+    }, 10);
 
     GhostBar.addEventListener("mousemove", (e) => {
         const rect = GhostBar.getBoundingClientRect();
@@ -43,7 +62,10 @@
 
             
             if (r < 255) {
-                console.log(r,g,b);
+                // console.log(r,g,b);
+                test = Math.max(g, test);
+                test2 = Math.max(r, test2);
+                console.log(test, test2);
             }
         }
     })
