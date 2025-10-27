@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #GhostBar {
+        border: 1px solid black;
+    }
+</style>
+<body>
+    <canvas id="GhostBar" width="200" height="50"></canvas>
+</body>
+<script>
+    const GhostBar = document.getElementById("GhostBar");
+    const GhostBarCont = GhostBar.getContext("2d");
+
+    // https://www.w3schools.com/graphics/canvas_gradients.asp
+    var gradient = GhostBarCont.createLinearGradient(80, 0, 100, 0);
+    gradient.addColorStop(0, "red");
+    gradient.addColorStop(0.5, "green");
+    gradient.addColorStop(1, "red");
+
+    GhostBarCont.fillStyle = gradient;
+    GhostBarCont.fillRect(0, 0, 200, 50);
+
+    GhostBar.addEventListener("mousemove", (e) => {
+        const rect = GhostBar.getBoundingClientRect();
+
+        const x = Math.max(0, (e.clientX - rect.left) - 2);
+        const y = Math.max(0, (e.clientY - rect.top) - 2);
+        const width = Math.min(5, GhostBar.width - x);
+        const height = Math.min(5, GhostBar.height - y);
+
+        const pixel = GhostBarCont.getImageData(x, y, width, height).data;
+
+        for (let i = 0; i < pixel.length; i += 4) {
+            const r = pixel[i];
+            const g = pixel[i + 1];
+            const b = pixel[i + 2];
+
+            
+            if (r < 255) {
+                console.log(r,g,b);
+            }
+        }
+    })
+</script>
+</script>
+</html>
