@@ -14,23 +14,52 @@
 
     #GhostBar {
         border: 1px solid black;
-        width: 200px;
+        width: 100%;
         height: 50px;
     }
 
     #fight {
+        width: 200px;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
+
+    #Enemy_healtbar, #Player_healtbar {
+        width: 200px;
+        height: 20px;
+        border: 1px solid black;
+        background: #90ee90;
+        text-align: center;
+    }
+    
+    #Player {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+
+    #YourLVL {
+        width: 100px;
+        height: 100px;
+        background-image: url('123');
+        text-align: center;
+    }
 </style>
 <body>
     <div id="fight">
+        <div id="Enemy_healtbar"><span id="Enemy_healt">100</span> / <span id="Enemy_max_healt">100</span></div>
         <img src="#" width="200" height="200">
-        <div style="width: 200px; border: 1px solid black;">
-            <p id="DamageNotif">You attack dealing <span id="AttackDamage">1</span>HP!</p>
+        <div style="width: 200px;">
+            <p id="DamageNotif">You attack dealing <span id="AttackDamage">1.00</span>HP!</p>
         </div>
         <canvas id="GhostBar" width="200" height="50"></canvas>
+    </div>
+    <div id="Player">
+        <h1>PlayerName</h1>
+        <div id="Player_healtbar"><span id="Player_healt">100</span> / <span id="Player_max_healt">100</span></div>
+        <div id="YourLVL">21</div>
     </div>
 </body>
 <script>
@@ -91,6 +120,10 @@
     });
 
     const AttackDamage = document.getElementById("AttackDamage");
+
+    const Enemy_max_healt = document.getElementById("Enemy_max_healt");
+    const Enemy_healt = document.getElementById("Enemy_healt");
+
     GhostBar.addEventListener("mousemove", (e) => {
         
         const rect = GhostBar.getBoundingClientRect();
@@ -116,10 +149,18 @@
                 if (!UserClicks || !FirstTime) return;
                 FirstTime = false;
                 AttackDamage.textContent = (g * 2 / test).toFixed(2);
+                Enemy_healt.textContent = (Number(Enemy_healt.textContent) - (g * 2 / test)).toFixed(2);
                 FitFontSize();
+                setTimeout(() => {
+                    FirstTime = true;
+                }, 2000);
             }
         }
-    })
+
+        if (Number(Enemy_healt.textContent) <= 0) {
+            console.log('You Win!');
+        }
+    });
 </script>
 </script>
 </html>
