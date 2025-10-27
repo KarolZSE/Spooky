@@ -6,14 +6,48 @@
     <title>Document</title>
 </head>
 <style>
+    #DamageNotif {
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+    }
+
     #GhostBar {
         border: 1px solid black;
+        width: 200px;
+        height: 50px;
+    }
+
+    #fight {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>
 <body>
-    <canvas id="GhostBar" width="200" height="50"></canvas>
+    <div id="fight">
+        <img src="#" width="200" height="200">
+        <div style="width: 200px; border: 1px solid black;">
+            <p id="DamageNotif">You attack dealing <span id="AttackDamage">1</span>HP!</p>
+        </div>
+        <canvas id="GhostBar" width="200" height="50"></canvas>
+    </div>
 </body>
 <script>
+    const DamageNotif = document.getElementById("DamageNotif");
+
+    function FitFontSize() {
+        let fontSize = 50;
+        DamageNotif.style.fontSize = fontSize + "px";
+        
+        while (DamageNotif.scrollWidth > DamageNotif.parentElement.clientWidth && fontSize > 0) {
+            fontSize -= 1;
+            DamageNotif.style.fontSize = fontSize + "px";
+        }
+    }
+
+    FitFontSize();
+
     const GhostBar = document.getElementById("GhostBar");
     const GhostBarCont = GhostBar.getContext("2d");
     let test = 0;
@@ -45,7 +79,20 @@
         DrawTheGradient();
     }, 10);
 
+    let UserClicks = false;
+    let FirstTime = true;
+
+    GhostBar.addEventListener("mousedown", () => {
+        UserClicks = true;
+    });
+    
+    GhostBar.addEventListener("mouseup", () => {
+        UserClicks = false;
+    });
+
+    const AttackDamage = document.getElementById("AttackDamage");
     GhostBar.addEventListener("mousemove", (e) => {
+        
         const rect = GhostBar.getBoundingClientRect();
 
         const x = Math.max(0, (e.clientX - rect.left) - 2);
@@ -64,8 +111,12 @@
             if (r < 255) {
                 // console.log(r,g,b);
                 test = Math.max(g, test);
-                test2 = Math.max(r, test2);
-                console.log(test, test2);
+                // test2 = Math.max(r, test2);
+                // console.log(test, test2);
+                if (!UserClicks || !FirstTime) return;
+                FirstTime = false;
+                AttackDamage.textContent = (g * 2 / test).toFixed(2);
+                FitFontSize();
             }
         }
     })
