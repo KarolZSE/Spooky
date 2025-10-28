@@ -124,10 +124,13 @@
     let test2 = 0;
     let offset = 0;
     let temp = 1;
+    let greensize = 0;
+    let draw = true;
 
     // https://www.w3schools.com/graphics/canvas_gradients.asp
     function DrawTheGradient() {
-        var gradient = GhostBarCont.createLinearGradient(80 + offset, 0, 100 + offset, 0);
+        if (!draw) return;
+        var gradient = GhostBarCont.createLinearGradient(80 + offset, 0, 150 - greensize + offset, 0);
         gradient.addColorStop(0, "red");
         gradient.addColorStop(0.5, "green");
         gradient.addColorStop(1, "red");
@@ -139,7 +142,7 @@
     DrawTheGradient();
     setInterval(() => {
         offset += temp;
-        if (offset >= 110) {
+        if (offset >= 80 + greensize / 2) {
             temp = -1;
             // delete the other if and change temp = -10; in to, 
             // offset = -90, if you want to make it go around.
@@ -188,40 +191,64 @@
                 // test2 = Math.max(r, test2);
                 // console.log(test, test2);
                 if (!UserClicks || !FirstTime) return;
-                FirstTime = false;
-                UserClicks = false;
-                
-                GhostBar.style.transform = `translate(0, -50%) scale(${window.innerWidth / (GhostBar.width + 1)}, ${(window.innerHeight / (GhostBar.height + 1))})`;
-                GhostBar.style.position = 'absolute';
-                GhostBar.style.top = '50%';
-                /*
-                GhostBar.style.width = '100vw';
-                GhostBar.style.height = '100vh';
-                GhostBar.style.position = 'absolute';
-                GhostBar.style.left = '0';
-                GhostBar.style.top = '0';
-                */
+                FirstTime = UserClicks = false;
+                if (greensize <= 50) greensize += 10;
+
                 AttackDamage.textContent = (g * 2 / test).toFixed(2);
                 Enemy_healt.textContent = (Number(Enemy_healt.textContent) - (g * 2 / test)).toFixed(2);
                 FitFontSize();
                 setTimeout(() => {
-                    GhostBar.style.transform = '';
-                    GhostBar.style.position = '';
-                    setTimeout(() => {
-                        FirstTime = true;  
-                    }, 1500);
-                }, 2000);
+                    FirstTime = true;
+                }, 100);
             }
 
             if (r === 255) {
+                if (!UserClicks || !FirstTime) return;
+                FirstTime = UserClicks = false;
                 console.log("You missed now it enemy's turn");
+                greensize = 0;
+                draw = false;
+                GhostBar.style.transform = `translate(0, -50%) scale(${window.innerWidth / (GhostBar.width + 1)}, ${(window.innerHeight / (GhostBar.height + 1))})`;
+                GhostBar.style.position = 'absolute';
+                GhostBar.style.top = '50%';
+
+                DrawAndMoveCircle(GhostBar.width * Math.random(), GhostBar.height * Math.random());
+
+                setTimeout(() => {
+                    GhostBar.style.transform = '';
+                    GhostBar.style.position = '';
+                    setTimeout(() => {
+                        FirstTime = true;
+                        draw = true;
+                    }, 1500);
+                }, 10000);
             }
+            
+            if (!UserClicks) return;
+            console.log(r)
         }
 
         if (Number(Enemy_healt.textContent) <= 0) {
             console.log('You Win!');
         }
     });
+
+    function DrawAndMoveCircle(xc, yc) {
+        GhostBarCont.fillStyle = '#000000';
+        GhostBarCont.fillRect(0, 0, GhostBar.width, GhostBar.height);
+
+        GhostBarCont.beginPath();
+        GhostBarCont.arc(xc, yc, 1, 0, Math.PI * 2);
+        GhostBarCont.fillStyle = 'blue';
+        GhostBarCont.fill();
+        GhostBarCont.closePath();
+
+        setTimeout(() => {
+            xc += Math.random() * 5 - 1;
+            yc += Math.random() * 5 - 1;
+            DrawAndMoveCircle(xc, yc);  
+        }, 100);
+    }
 </script>
 </script>
 </html>
