@@ -6,6 +6,13 @@
     <title>Document</title>
 </head>
 <style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        overflow-x: hidden;
+    }
     #DamageNotif {
         margin: 0;
         padding: 0;
@@ -14,15 +21,27 @@
 
     #GhostBar {
         border: 1px solid black;
-        width: 100%;
+        width: 200px;
         height: 50px;
     }
 
+    #Container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1400px;
+        height: 600px;
+        gap: 10px;
+        zoom: 80%;
+    }
+
     #fight {
-        width: 200px;
+        width: 700px;
+        height: 600px;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        justify-content: space-around;
+        border: 1px solid black;
     }
 
     #Enemy_healtbar, #Player_healtbar {
@@ -31,36 +50,55 @@
         border: 1px solid black;
         background: #90ee90;
         text-align: center;
+        margin-bottom: 20px;
     }
     
-    #Player {
+    #Player, #enemy {
+        position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-wrap: wrap;
+        width: 300px;
         gap: 20px;
+        border: 1px solid black;
+    }
+
+    #Player {
+        align-self: flex-end;
+    }
+
+    #enemy {
+        align-self: flex-start;
     }
 
     #YourLVL {
-        width: 100px;
-        height: 100px;
-        background-image: url('123');
-        text-align: center;
+        background-image: url('');
     }
 </style>
 <body>
-    <div id="fight">
-        <div id="Enemy_healtbar"><span id="Enemy_healt">100</span> / <span id="Enemy_max_healt">100</span></div>
-        <img src="#" width="200" height="200">
-        <div style="width: 200px;">
-            <p id="DamageNotif">You attack dealing <span id="AttackDamage">1.00</span>HP!</p>
-        </div>
-        <canvas id="GhostBar" width="200" height="50"></canvas>
-    </div>
+<div id="Container">
     <div id="Player">
         <h1>PlayerName</h1>
-        <div id="Player_healtbar"><span id="Player_healt">100</span> / <span id="Player_max_healt">100</span></div>
         <div id="YourLVL">21</div>
+        <div id="Player_healtbar"><span id="Player_healt">100</span> / <span id="Player_max_healt">100</span></div>
     </div>
+    <div id="fight">
+        <img src="#" width="200" height="200" style="margin-right: 100px; align-self: flex-end;">
+        <img src="#" width="200" height="200" style="margin-left: 100px; align-self: flex-start;">
+    </div>
+    <div id="enemy">
+        <h1>EnemyName</h1>
+        <div id="EnemyLVL">2</div>
+        <div id="Enemy_healtbar"><span id="Enemy_healt">100</span> / <span id="Enemy_max_healt">100</span></div>
+    </div>
+</div>
+<div>
+    <div style="width: 200px;">
+        <p id="DamageNotif">You attack dealing <span id="AttackDamage">1.00</span>HP!</p>
+    </div>
+    <canvas id="GhostBar" width="200" height="50"></canvas>
+</div>
 </body>
 <script>
     const DamageNotif = document.getElementById("DamageNotif");
