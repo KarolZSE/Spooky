@@ -11,7 +11,7 @@
         flex-direction: column;
         align-items: center;
         gap: 20px;
-        overflow-x: hidden;
+        overflow: hidden;
     }
     #DamageNotif {
         margin: 0;
@@ -23,6 +23,9 @@
         border: 1px solid black;
         width: 200px;
         height: 50px;
+        transition: all 1.5s linear;
+        position: relative;
+        z-index: 2;
     }
 
     #Container {
@@ -186,12 +189,32 @@
                 // console.log(test, test2);
                 if (!UserClicks || !FirstTime) return;
                 FirstTime = false;
+                UserClicks = false;
+                
+                GhostBar.style.transform = `translate(0, -50%) scale(${window.innerWidth / (GhostBar.width + 1)}, ${(window.innerHeight / (GhostBar.height + 1))})`;
+                GhostBar.style.position = 'absolute';
+                GhostBar.style.top = '50%';
+                /*
+                GhostBar.style.width = '100vw';
+                GhostBar.style.height = '100vh';
+                GhostBar.style.position = 'absolute';
+                GhostBar.style.left = '0';
+                GhostBar.style.top = '0';
+                */
                 AttackDamage.textContent = (g * 2 / test).toFixed(2);
                 Enemy_healt.textContent = (Number(Enemy_healt.textContent) - (g * 2 / test)).toFixed(2);
                 FitFontSize();
                 setTimeout(() => {
-                    FirstTime = true;
+                    GhostBar.style.transform = '';
+                    GhostBar.style.position = '';
+                    setTimeout(() => {
+                        FirstTime = true;  
+                    }, 1500);
                 }, 2000);
+            }
+
+            if (r === 255) {
+                console.log("You missed now it enemy's turn");
             }
         }
 
