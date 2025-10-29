@@ -1,0 +1,171 @@
+    const DamageNotif = document.getElementById("DamageNotif");
+
+    function FitFontSize() {
+        let fontSize = 50;
+        DamageNotif.style.fontSize = fontSize + "px";
+        
+        while (DamageNotif.scrollWidth > DamageNotif.parentElement.clientWidth && fontSize > 0) {
+            fontSize -= 1;
+            DamageNotif.style.fontSize = fontSize + "px";
+        }
+    }
+
+    FitFontSize();
+
+    const GhostBar = document.getElementById("GhostBar");
+    const GhostBarCont = GhostBar.getContext("2d");
+    let test = 0;
+    let test2 = 0;
+    let offset = 0;
+    let temp = 1;
+    let greensize = 0;
+    let draw = true;
+
+    // https://www.w3schools.com/graphics/canvas_gradients.asp
+    function DrawTheGradient() {
+        if (!draw) return;
+        var gradient = GhostBarCont.createLinearGradient(80 + offset, 0, 150 - greensize + offset, 0);
+        gradient.addColorStop(0, "red");
+        gradient.addColorStop(0.5, "green");
+        gradient.addColorStop(1, "red");
+
+        GhostBarCont.fillStyle = gradient;
+        GhostBarCont.fillRect(0, 0, GhostBar.width, GhostBar.height);
+    }
+
+    DrawTheGradient();
+    setInterval(() => {
+        offset += temp;
+        if (offset >= 80 + greensize / 2) {
+            temp = -1;
+            // delete the other if and change temp = -10; in to, 
+            // offset = -90, if you want to make it go around.
+        } else if (offset <= -90) {
+            temp = 1;
+        }
+        DrawTheGradient();
+    }, 10);
+
+    let UserClicks = false;
+    let FirstTime = true;
+
+    GhostBar.addEventListener("mousedown", () => {
+        UserClicks = true;
+    });
+    
+    GhostBar.addEventListener("mouseup", () => {
+        UserClicks = false;
+    });
+
+    const AttackDamage = document.getElementById("AttackDamage");
+
+    const Enemy_max_healt = document.getElementById("Enemy_max_healt");
+    const Enemy_healt = document.getElementById("Enemy_healt");
+
+    GhostBar.addEventListener("mousemove", (e) => {
+        
+        const rect = GhostBar.getBoundingClientRect();
+
+        const x = Math.max(0, (e.clientX - rect.left) - 2);
+        const y = Math.max(0, (e.clientY - rect.top) - 2);
+        const width = Math.min(5, GhostBar.width - x);
+        const height = Math.min(5, GhostBar.height - y);
+
+        const pixel = GhostBarCont.getImageData(x, y, width, height).data;
+
+        for (let i = 0; i < pixel.length; i += 4) {
+            const r = pixel[i];
+            const g = pixel[i + 1];
+            const b = pixel[i + 2];
+
+            
+            if (r < 255) {
+                // console.log(r,g,b);
+                test = Math.max(g, test);
+                // test2 = Math.max(r, test2);
+                // console.log(test, test2);
+                if (!UserClicks || !FirstTime) return;
+                FirstTime = UserClicks = false;
+                if (greensize <= 50) greensize += 10;
+
+                AttackDamage.textContent = (g * 2 / test).toFixed(2);
+                Enemy_healt.textContent = (Number(Enemy_healt.textContent) - (g * 2 / test)).toFixed(2);
+                FitFontSize();
+                setTimeout(() => {
+                    FirstTime = true;
+                }, 100);
+            }
+
+            if (r === 255) {
+                if (!UserClicks || !FirstTime) return;
+                FirstTime = UserClicks = false;
+                console.log("You missed now it enemy's turn");
+                greensize = 0;
+                draw = false;
+
+                const rect = GhostBar.getBoundingClientRect();
+                GhostBar.style.position = 'absolute';
+                GhostBar.style.top = rect.top + 'px';
+                GhostBar.style.left = rect.left + 'px';
+                
+                GhostBar.offsetHeight;
+
+                GhostBar.width = window.innerWidth;
+                GhostBar.height = window.innerHeight;
+                GhostBar.style.width = window.innerWidth + 'px';
+                GhostBar.style.height = window.innerHeight + 'px';
+
+                GhostBar.style.top = '0px';
+                GhostBar.style.left = '0px';
+
+
+                DrawAndMoveCircle(GhostBar.width * Math.random(), GhostBar.height * Math.random());
+
+                setTimeout(() => {
+                    GhostBar.style.transition = 'none';
+
+                    GhostBar.style.position = 'relative';
+
+                    GhostBar.style.width = '';
+                    GhostBar.style.height = '';
+                    
+                    GhostBar.style.top = '';
+                    GhostBar.style.left = '';
+
+                    GhostBar.width = '200';
+                    GhostBar.height = '50';
+                    
+                    GhostBar.offsetHeight;
+
+                    GhostBar.style.transition = '';
+                    FirstTime = true;
+                    draw = true;
+                }, 10000);
+            }
+            
+            if (!UserClicks) return;
+            console.log(r)
+        }
+
+        if (Number(Enemy_healt.textContent) <= 0) {
+            console.log('You Win!');
+        }
+    });
+
+    function DrawAndMoveCircle(xc, yc) {
+        if (draw) return;
+        GhostBarCont.fillStyle = '#000000';
+        GhostBarCont.fillRect(0, 0, GhostBar.width, GhostBar.height);
+
+        GhostBarCont.beginPath();
+        GhostBarCont.arc(xc, yc, 1, 0, Math.PI * 2);
+        GhostBarCont.fillStyle = 'blue';
+        GhostBarCont.fill();
+        GhostBarCont.closePath();
+
+        setTimeout(() => {
+            // xc += Math.random() * 2 - 1;
+            // yc += Math.random() * 2 - 1;
+            DrawAndMoveCircle(xc, yc);  
+        }, 100);
+    }
