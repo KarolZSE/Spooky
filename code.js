@@ -13,7 +13,7 @@
     FitFontSize();
 
     const GhostBar = document.getElementById("GhostBar");
-    const GhostBarCont = GhostBar.getContext("2d");
+    const GhostBarCont = GhostBar.getContext("2d", { willReadFrequently: true });
     let test = 0;
     let test2 = 0;
     let offset = 0;
@@ -62,14 +62,20 @@
     const Enemy_max_healt = document.getElementById("Enemy_max_healt");
     const Enemy_healt = document.getElementById("Enemy_healt");
 
+    const Player_healt = document.getElementById('Player_healt');
+
+    let mousex = 0;
+    let mousey = 0;
+
     GhostBar.addEventListener("mousemove", (e) => {
         
         const rect = GhostBar.getBoundingClientRect();
 
-        const x = Math.max(0, (e.clientX - rect.left) - 2);
-        const y = Math.max(0, (e.clientY - rect.top) - 2);
-        const width = Math.min(5, GhostBar.width - x);
-        const height = Math.min(5, GhostBar.height - y);
+        mousex = e.clientX;
+        mousey = e.clientY;
+
+        const width = Math.min(5, GhostBar.width - Math.max(0, (e.clientX - rect.left) - 2));
+        const height = Math.min(5, GhostBar.height - Math.max(0, (e.clientY - rect.top) - 2));
 
         const pixel = GhostBarCont.getImageData(x, y, width, height).data;
 
@@ -78,7 +84,10 @@
             const g = pixel[i + 1];
             const b = pixel[i + 2];
 
-            
+            if (b === 255) {
+                Player_healt.textContent = Number(Player_healt.textContent) - (Math.random() * 2 + 1).toFixed(2);
+            }
+
             if (r < 255) {
                 // console.log(r,g,b);
                 test = Math.max(g, test);
@@ -120,6 +129,7 @@
 
 
                 DrawAndMoveCircle(GhostBar.width * Math.random(), GhostBar.height * Math.random());
+                DrawAndMoveCircle(GhostBar.width * Math.random(), GhostBar.height * Math.random());
 
                 setTimeout(() => {
                     GhostBar.style.transition = 'none';
@@ -158,14 +168,53 @@
         GhostBarCont.fillRect(0, 0, GhostBar.width, GhostBar.height);
 
         GhostBarCont.beginPath();
-        GhostBarCont.arc(xc, yc, 1, 0, Math.PI * 2);
+        GhostBarCont.arc(xc, yc, 100, 0, Math.PI * 2);
         GhostBarCont.fillStyle = 'blue';
         GhostBarCont.fill();
         GhostBarCont.closePath();
 
         setTimeout(() => {
-            // xc += Math.random() * 2 - 1;
-            // yc += Math.random() * 2 - 1;
+            if (mousex - xc < 0) {
+                xc -= 3; 
+            } else xc += 3;
+            if (mousey - yc < 0) {
+                yc -= 3; 
+            } else yc += 3;
             DrawAndMoveCircle(xc, yc);  
-        }, 100);
+        }, 10);
+    }
+
+    const outside = document.getElementById('outside');
+    const Player = document.getElementById('PlayerOutside');
+    outside.addEventListener('mousemove', function(e) {
+        let x = e.clientX - outside.offsetLeft - Player.offsetWidth / 2;
+        let y = e.clientY - outside.offsetTop - Player.offsetHeight / 2;
+
+        x = Math.max(0, Math.min(x, outside.offsetWidth - Player.offsetWidth));
+        y = Math.max(0, Math.min(y, outside.offsetHeight - Player.offsetHeight));
+
+        OldX = Player.offsetLeft;
+        OldY = Player.offsetTop;
+
+        Player.style.left = x + 'px';
+        Player.style.top = y + 'px';
+
+        document.querySelectorAll('.Wall').forEach(e => {
+            if (isColliding(e, Player)) {
+                Player.style.left = OldX + 'px';
+                Player.style.top = OldY + 'px';    
+            }
+        });
+    });
+
+    function isColliding(e1, e2) {
+        const rect1 = e1.getBoundingClientRect();
+        const rect2 = e2.getBoundingClientRect();
+
+        return !(
+            rect1.top > rect2.bottom ||
+            rect1.bottom < rect2.top ||
+            rect1.left > rect2.right ||
+            rect1.right < rect2.left
+        );
     }

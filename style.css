@@ -21,7 +21,7 @@
     }
 
     #Container {
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         width: 1400px;
@@ -69,4 +69,18 @@
 
     #YourLVL {
         background-image: url('');
+    }
+
+    #outside {
+        position: relative;
+        width: 1200px;
+        height: 700px;
+        border: 1px solid black;
+    }
+
+    #PlayerOutside, .Wall {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border: 1px solid black;
     }
