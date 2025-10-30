@@ -78,7 +78,7 @@
         border: 1px solid black;
     }
 
-    #PlayerOutside, .Wall {
+    #PlayerOutside, .Wall, #trigger {
         position: absolute;
         width: 100px;
         height: 100px;
@@ -102,4 +102,15 @@
         width: 100%; 
         top: 60%; 
         image-rendering: pixelated;
+    }
+
+    #trigger {
+        left: 70%;
+    }
+
+    #jumpscare {
+        display: none;
+        position: absolute; 
+        image-rendering: pixelated; 
+        z-index: 3;   
     }

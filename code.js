@@ -186,8 +186,15 @@
 
     const outside = document.getElementById('outside');
     const Player = document.getElementById('PlayerOutside');
+
+    const jumpscare = document.getElementById("jumpscare");
+    const trigger = document.getElementById('trigger');
+    const BGM = new Audio('backgroundmusic.mp3');
+
     let slide = 0;
     let lastChange = 0;
+    let change = 1;
+
 
     outside.addEventListener('mousemove', function(e) {
         let x = e.clientX - outside.offsetLeft - Player.offsetWidth / 2;
@@ -215,6 +222,23 @@
                 }
             }
         });
+
+        if (isColliding(trigger, Player)) {
+            jumpscare.style.display = 'inline';    
+            trigger.remove();
+            const ColorChange = setInterval(() => {
+                if (change === 1) {
+                    jumpscare.style.filter = 'sepia(0) saturate(1000000%) hue-rotate(-70deg)';
+                } else {
+                    jumpscare.style.filter = '';
+                }
+                change *= -1;
+            }, 100);
+            setTimeout(() => {
+                clearInterval(ColorChange);
+            }, 3100);
+            BGM.play();
+        }
     });
 
     function isColliding(e1, e2) {
