@@ -186,6 +186,9 @@
 
     const outside = document.getElementById('outside');
     const Player = document.getElementById('PlayerOutside');
+    let slide = 0;
+    let lastChange = 0;
+
     outside.addEventListener('mousemove', function(e) {
         let x = e.clientX - outside.offsetLeft - Player.offsetWidth / 2;
         let y = e.clientY - outside.offsetTop - Player.offsetHeight / 2;
@@ -203,6 +206,13 @@
             if (isColliding(e, Player)) {
                 Player.style.left = OldX + 'px';
                 Player.style.top = OldY + 'px';    
+            } else {
+                const now = Date.now();
+                if (now - lastChange > 100) {
+                    Player.style.backgroundPosition = `-${100 * slide++}px -400px`;
+                    if (slide >= 6) slide = 0;
+                    lastChange = now;
+                }
             }
         });
     });
