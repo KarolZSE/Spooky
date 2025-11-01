@@ -1,9 +1,12 @@
     body {
+        margin: 0;
+        padding: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 20px;
         overflow: hidden;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
     #DamageNotif {
         margin: 0;
@@ -20,14 +23,45 @@
         z-index: 2;
     }
 
+    #GhostBar.fullscreen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        z-index: 10;
+    }
+
+    #darkness {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+            circle 100px at center,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.99) 80%
+        );
+        z-index: 3;
+    }
+
     #Container {
         display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         align-items: center;
         justify-content: center;
+        flex-wrap: wrap;
+        flex-basis: 3;
         width: 1400px;
         height: 600px;
         gap: 10px;
         zoom: 80%;
+        z-index: 4;
     }
 
     #fight {
@@ -37,6 +71,7 @@
         flex-direction: column;
         justify-content: space-around;
         border: 1px solid black;
+        background-color: white;
     }
 
     #Enemy_healtbar, #Player_healtbar {
@@ -57,6 +92,7 @@
         width: 300px;
         gap: 20px;
         border: 1px solid black;
+        background-color: white;
     }
 
     #Player {
@@ -82,7 +118,6 @@
         position: absolute;
         width: 100px;
         height: 100px;
-        border: 1px solid black;
         z-index: 2;
     }
 
@@ -112,5 +147,17 @@
         display: none;
         position: absolute; 
         image-rendering: pixelated; 
-        z-index: 3;   
+        z-index: 4;   
+    }
+
+    #playerIMG {
+        margin-left: 100px; 
+        align-self: flex-start; 
+        width: 200px; 
+        height: 200px; 
+        background: url('Player.png');
+        background-size: 1200px 2000px;
+        background-repeat: no-repeat;
+        background-position: 0 -400px;
+        image-rendering: pixelated;
     }

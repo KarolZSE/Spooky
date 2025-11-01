@@ -3,14 +3,13 @@
     function FitFontSize() {
         let fontSize = 50;
         DamageNotif.style.fontSize = fontSize + "px";
-        
+
         while (DamageNotif.scrollWidth > DamageNotif.parentElement.clientWidth && fontSize > 0) {
             fontSize -= 1;
             DamageNotif.style.fontSize = fontSize + "px";
         }
     }
 
-    FitFontSize();
 
     const GhostBar = document.getElementById("GhostBar");
     const GhostBarCont = GhostBar.getContext("2d", { willReadFrequently: true });
@@ -77,7 +76,7 @@
         const width = Math.min(5, GhostBar.width - Math.max(0, (e.clientX - rect.left) - 2));
         const height = Math.min(5, GhostBar.height - Math.max(0, (e.clientY - rect.top) - 2));
 
-        const pixel = GhostBarCont.getImageData(x, y, width, height).data;
+        const pixel = GhostBarCont.getImageData(Math.max(0, (e.clientX - rect.left) - 2), Math.max(0, (e.clientY - rect.top) - 2), width, height).data;
 
         for (let i = 0; i < pixel.length; i += 4) {
             const r = pixel[i];
@@ -114,8 +113,8 @@
 
                 const rect = GhostBar.getBoundingClientRect();
                 GhostBar.style.position = 'absolute';
-                GhostBar.style.top = rect.top + 'px';
-                GhostBar.style.left = rect.left + 'px';
+                GhostBar.style.top = '0px';
+                GhostBar.style.left = '0px';
                 
                 GhostBar.offsetHeight;
 
@@ -191,12 +190,15 @@
     const trigger = document.getElementById('trigger');
     const BGM = new Audio('backgroundmusic.mp3');
 
+    const darkness = document.getElementById('darkness')
+
     let slide = 0;
     let lastChange = 0;
     let change = 1;
-
+    let infight = false;
 
     outside.addEventListener('mousemove', function(e) {
+        if (infight) return;
         let x = e.clientX - outside.offsetLeft - Player.offsetWidth / 2;
         let y = e.clientY - outside.offsetTop - Player.offsetHeight / 2;
 
@@ -223,7 +225,14 @@
             }
         });
 
+        darkness.style.background = `radial-gradient(
+            circle 100px at ${Player.offsetLeft + Player.offsetWidth / 2}px ${Player.offsetTop + Player.offsetHeight / 2}px,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.99) 80%
+        )`;
+
         if (isColliding(trigger, Player)) {
+            // darkness.style.display = 'none';
             jumpscare.style.display = 'inline';    
             trigger.remove();
             const ColorChange = setInterval(() => {
@@ -236,8 +245,12 @@
             }, 100);
             setTimeout(() => {
                 clearInterval(ColorChange);
-            }, 3100);
-            BGM.play();
+                document.getElementById('Container').style.display = 'flex';
+                jumpscare.style.display = '';
+                //outside.style.display = 'none';
+                infight = true;
+                FitFontSize();
+            }, 1400);
         }
     });
 
@@ -251,4 +264,9 @@
             rect1.left > rect2.right ||
             rect1.right < rect2.left
         );
+    }
+
+    const Menubutton = document.getElementById('Menubutton');
+    Menubutton.onclick = function() {
+        BGM.play();
     }
