@@ -66,6 +66,8 @@
     let mousex = 0;
     let mousey = 0;
 
+    const OLDparrent = GhostBar.parentElement;
+
     GhostBar.addEventListener("mousemove", (e) => {
         
         const rect = GhostBar.getBoundingClientRect();
@@ -84,7 +86,7 @@
             const b = pixel[i + 2];
 
             if (b === 255) {
-                Player_healt.textContent = Number(Player_healt.textContent) - (Math.random() * 2 + 1).toFixed(2);
+                Player_healt.textContent = (Number(Player_healt.textContent) - (Math.random() * 2 + 1)).toFixed(2);
             }
 
             if (r < 255) {
@@ -111,10 +113,11 @@
                 greensize = 0;
                 draw = false;
 
+                document.body.appendChild(GhostBar);
                 const rect = GhostBar.getBoundingClientRect();
                 GhostBar.style.position = 'absolute';
-                GhostBar.style.top = '0px';
-                GhostBar.style.left = '0px';
+                GhostBar.style.top = rect.top + 'px';
+                GhostBar.style.left = rect.left + 'px';
                 
                 GhostBar.offsetHeight;
 
@@ -128,10 +131,10 @@
 
 
                 DrawAndMoveCircle(GhostBar.width * Math.random(), GhostBar.height * Math.random());
-                DrawAndMoveCircle(GhostBar.width * Math.random(), GhostBar.height * Math.random());
 
                 setTimeout(() => {
                     GhostBar.style.transition = 'none';
+                    OLDparrent.appendChild(GhostBar);
 
                     GhostBar.style.position = 'relative';
 
@@ -166,11 +169,23 @@
         GhostBarCont.fillStyle = '#000000';
         GhostBarCont.fillRect(0, 0, GhostBar.width, GhostBar.height);
 
-        GhostBarCont.beginPath();
-        GhostBarCont.arc(xc, yc, 100, 0, Math.PI * 2);
-        GhostBarCont.fillStyle = 'blue';
-        GhostBarCont.fill();
-        GhostBarCont.closePath();
+        GhostBarCont.imageSmoothingEnabled = false;
+        const GhostCanvas = new Image();
+        GhostCanvas.src = 'Halloween Characters/Ghost/Png_animation/Ghost1.png';
+        GhostCanvas.onload = () => {            
+            GhostBarCont.save();
+
+            GhostBarCont.translate(xc, yc);
+
+            if (mousex - xc < 3) {
+                GhostBarCont.scale(1, 1);
+            } else if (mousex - xc > 3) GhostBarCont.scale(-1, 1);
+
+            GhostBarCont.drawImage(GhostCanvas, -100, -100, 200, 200);
+
+            GhostBarCont.restore();
+        };
+
 
         setTimeout(() => {
             if (mousex - xc < 0) {
