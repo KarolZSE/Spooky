@@ -62,12 +62,14 @@
     const Enemy_healt = document.getElementById("Enemy_healt");
 
     const Player_healt = document.getElementById('Player_healt');
+    const Warning = document.getElementById('Warning');
 
     let mousex = 0;
     let mousey = 0;
 
     const OLDparrent = GhostBar.parentElement;
-
+    const outside = document.getElementById('outside');
+    
     GhostBar.addEventListener("mousemove", (e) => {
         
         const rect = GhostBar.getBoundingClientRect();
@@ -85,9 +87,12 @@
             const g = pixel[i + 1];
             const b = pixel[i + 2];
 
-            if (b === 255) {
+            if (b > 100) {
                 Player_healt.textContent = (Number(Player_healt.textContent) - (Math.random() * 2 + 1)).toFixed(2);
-            }
+                if (Number(Player_healt.textContent) <= 0) {
+                    console.log('You Lose!');
+                }
+            };
 
             if (r < 255) {
                 // console.log(r,g,b);
@@ -98,12 +103,18 @@
                 FirstTime = UserClicks = false;
                 if (greensize <= 50) greensize += 10;
 
-                AttackDamage.textContent = (g * 2 / test).toFixed(2);
-                Enemy_healt.textContent = (Number(Enemy_healt.textContent) - (g * 2 / test)).toFixed(2);
+                AttackDamage.textContent = (g * 2 * 40 / test).toFixed(2);
+                Enemy_healt.textContent = (Number(Enemy_healt.textContent) - (g * 2 * 40 / test)).toFixed(2);
                 FitFontSize();
                 setTimeout(() => {
                     FirstTime = true;
                 }, 100);
+            }
+
+            if (Number(Enemy_healt.textContent) <= 0) {
+                document.getElementById('Container').style.display = '';
+                infight = false;
+                Warning.textContent = "You've survived, this time...";
             }
 
             if (r === 255) {
@@ -158,10 +169,6 @@
             if (!UserClicks) return;
             console.log(r)
         }
-
-        if (Number(Enemy_healt.textContent) <= 0) {
-            console.log('You Win!');
-        }
     });
 
     function DrawAndMoveCircle(xc, yc) {
@@ -198,7 +205,6 @@
         }, 10);
     }
 
-    const outside = document.getElementById('outside');
     const Player = document.getElementById('PlayerOutside');
 
     const jumpscare = document.getElementById("jumpscare");
@@ -281,7 +287,93 @@
         );
     }
 
+    /*
     const Menubutton = document.getElementById('Menubutton');
     Menubutton.onclick = function() {
         BGM.play();
     }
+        */
+
+    const tilegrid = document.getElementById('tilegrid');
+    const tileposition = [];
+    const edgeIndex = [];
+    const Cols = 12;
+    const Rows = 7;
+
+    function CreateRandomRoom() {
+        tilegrid.innerHTML = ''
+        tileposition.length = 0;
+        edgeIndex.length = 0;
+        for (let j = 0; j < Rows; j++) {
+            for (let i = 0; i < Cols; i++) {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                tilegrid.appendChild(tile);
+                tileposition.push(tile);
+                if (i === 0 || i === Cols - 1 || j === 0 || j === Rows - 1) {
+                    edgeIndex.push(tileposition.length - 1);
+                    tile.textContent = edgeIndex.length;
+                }
+            }
+        }
+        
+        const StartPos = edgeIndex[Math.floor(Math.random() * edgeIndex.length)];
+        const startRow = Math.floor(StartPos / Cols);
+        const startCol = StartPos % Cols;
+        const farEdges = edgeIndex.filter(pos => {
+            const row = Math.floor(pos / Cols);
+            const col = pos % Cols;
+            const dist = Math.abs(row - startRow) + Math.abs(col - startCol);
+            return dist > 8;
+        })
+        const endPos = farEdges[Math.floor(Math.random() * farEdges.length)];
+        const path = new Set([StartPos]);
+        let current = StartPos;
+        const visited = new Set([StartPos]);
+
+        const endRow = Math.floor(endPos / Cols);
+        const endCol = endPos % Cols;
+        while (current !== endPos) {
+            const neigbors = getNeighbors(current);
+            const validMoves = neigbors.filter(n =>
+                !visited.has(n) || n === endPos
+            );
+            if (validMoves.length === 0) {
+                const pathArray = Array.from(path);
+                path.delete(current);
+                current = pathArray[pathArray.length - 1];
+                continue;
+            }
+
+            validMoves.sort((a, b) => {
+                const aDist = Math.abs(Math.floor(a / Cols) - endRow) + Math.abs(a % Cols - endCol);
+                const bDist = Math.abs(Math.floor(b / Cols) - endRow) + Math.abs(a % Cols - endCol);
+                return aDist - bDist + (Math.random() - 0.5) * 3;
+            });
+
+            current = validMoves[0];
+            visited.add(current);
+            path.add(current);
+        }
+
+        path.forEach(pos => {
+            tileposition[pos].style.background = '#5c697f';
+        });
+        tileposition[StartPos].style.background = '#2baa3cff';
+        tileposition[endPos].style.background = '#aa2b2bff';
+    }
+
+    function getNeighbors(pos) {
+        const neigbors = [];
+        const row = Math.floor(pos / Cols);
+        const col = pos % Cols;
+
+        if (row > 0) neigbors.push(pos - Cols);
+        if (row < Rows - 1) neigbors.push(pos + Cols);
+        if (col > 0) neigbors.push(pos - 1);
+        if (col < Cols - 1) neigbors.push(pos + 1);
+
+        return neigbors;
+    }
+    
+    CreateRandomRoom();
