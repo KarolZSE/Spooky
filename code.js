@@ -172,6 +172,7 @@
     });
 
     function DrawAndMoveCircle(xc, yc) {
+        /*
         if (draw) return;
         GhostBarCont.fillStyle = '#000000';
         GhostBarCont.fillRect(0, 0, GhostBar.width, GhostBar.height);
@@ -203,12 +204,12 @@
             } else yc += 3;
             DrawAndMoveCircle(xc, yc);  
         }, 10);
+        */
     }
 
     const Player = document.getElementById('PlayerOutside');
 
     const jumpscare = document.getElementById("jumpscare");
-    const trigger = document.getElementById('trigger');
     const BGM = new Audio('backgroundmusic.mp3');
 
     const darkness = document.getElementById('darkness')
@@ -226,17 +227,30 @@
         x = Math.max(0, Math.min(x, outside.offsetWidth - Player.offsetWidth));
         y = Math.max(0, Math.min(y, outside.offsetHeight - Player.offsetHeight));
 
-        OldX = Player.offsetLeft;
-        OldY = Player.offsetTop;
+        let OldX = Player.offsetLeft;
+        let OldY = Player.offsetTop;
 
         Player.style.left = x + 'px';
         Player.style.top = y + 'px';
 
+        let wallCollieded = false;
         document.querySelectorAll('.Wall').forEach(e => {
             if (isColliding(e, Player)) {
                 Player.style.left = OldX + 'px';
-                Player.style.top = OldY + 'px';    
-            } else {
+                Player.style.top = OldY + 'px';
+                wallCollieded = true;    
+            }
+        });
+
+        let tileCollided = false;
+        document.querySelectorAll('.tile').forEach(e => {
+            if (isColliding(e, Player)) {
+                Player.style.left = OldX + 'px';
+                Player.style.top = OldY + 'px';
+                tileCollided = true;
+            }
+        });
+            if (!wallCollieded && !tileCollided) {
                 const now = Date.now();
                 if (now - lastChange > 100) {
                     Player.style.backgroundPosition = `-${100 * slide++}px -400px`;
@@ -244,7 +258,6 @@
                     lastChange = now;
                 }
             }
-        });
 
         darkness.style.background = `radial-gradient(
             circle 100px at ${Player.offsetLeft + Player.offsetWidth / 2}px ${Player.offsetTop + Player.offsetHeight / 2}px,
@@ -252,29 +265,32 @@
             rgba(0, 0, 0, 0.99) 80%
         )`;
 
-        if (isColliding(trigger, Player)) {
-            // darkness.style.display = 'none';
-            jumpscare.style.display = 'inline';    
-            trigger.remove();
-            const ColorChange = setInterval(() => {
-                if (change === 1) {
-                    jumpscare.style.filter = 'sepia(0) saturate(1000000%) hue-rotate(-70deg)';
-                } else {
-                    jumpscare.style.filter = '';
-                }
-                change *= -1;
-            }, 100);
-            setTimeout(() => {
-                clearInterval(ColorChange);
-                document.getElementById('Container').style.display = 'flex';
-                jumpscare.style.display = '';
-                //outside.style.display = 'none';
-                infight = true;
-                FitFontSize();
-            }, 1400);
-        }
+        document.querySelectorAll('.trigger').forEach(e => {
+            if (isColliding(e, Player)) {
+                // darkness.style.display = 'none';
+                jumpscare.style.display = 'inline';    
+                e.remove();
+                const ColorChange = setInterval(() => {
+                    if (change === 1) {
+                        jumpscare.style.filter = 'sepia(0) saturate(1000000%) hue-rotate(-70deg)';
+                    } else {
+                        jumpscare.style.filter = '';
+                    }
+                    change *= -1;
+                }, 100);
+                setTimeout(() => {
+                    clearInterval(ColorChange);
+                    document.getElementById('Container').style.display = 'flex';
+                    jumpscare.style.display = '';
+                    //outside.style.display = 'none';
+                    infight = true;
+                    FitFontSize();
+                }, 1400);
+            }
+        });
     });
 
+    let rate_limit = 0;
     function isColliding(e1, e2) {
         const rect1 = e1.getBoundingClientRect();
         const rect2 = e2.getBoundingClientRect();
@@ -304,6 +320,7 @@
         tilegrid.innerHTML = ''
         tileposition.length = 0;
         edgeIndex.length = 0;
+
         for (let j = 0; j < Rows; j++) {
             for (let i = 0; i < Cols; i++) {
                 const tile = document.createElement('div');
@@ -312,20 +329,22 @@
                 tileposition.push(tile);
                 if (i === 0 || i === Cols - 1 || j === 0 || j === Rows - 1) {
                     edgeIndex.push(tileposition.length - 1);
-                    tile.textContent = edgeIndex.length;
                 }
             }
         }
         
         const StartPos = edgeIndex[Math.floor(Math.random() * edgeIndex.length)];
+
         const startRow = Math.floor(StartPos / Cols);
         const startCol = StartPos % Cols;
+
         const farEdges = edgeIndex.filter(pos => {
             const row = Math.floor(pos / Cols);
             const col = pos % Cols;
             const dist = Math.abs(row - startRow) + Math.abs(col - startCol);
             return dist > 8;
-        })
+        });
+
         const endPos = farEdges[Math.floor(Math.random() * farEdges.length)];
         const path = new Set([StartPos]);
         let current = StartPos;
@@ -333,11 +352,11 @@
 
         const endRow = Math.floor(endPos / Cols);
         const endCol = endPos % Cols;
+
         while (current !== endPos) {
             const neigbors = getNeighbors(current);
-            const validMoves = neigbors.filter(n =>
-                !visited.has(n) || n === endPos
-            );
+            const validMoves = neigbors.filter(n => !visited.has(n) || n === endPos);
+
             if (validMoves.length === 0) {
                 const pathArray = Array.from(path);
                 path.delete(current);
@@ -358,10 +377,22 @@
 
         path.forEach(pos => {
             tileposition[pos].style.background = '#5c697f';
+            tileposition[pos].classList.remove('tile');
+            if (Math.random() >= 0.9) {
+                const SpawnTrigger = document.createElement('div');
+                SpawnTrigger.style.width = '100px';
+                SpawnTrigger.style.height = '100px';
+                SpawnTrigger.style.background = '#000000';
+                SpawnTrigger.classList.add('trigger');
+                tileposition[pos].appendChild(SpawnTrigger);
+            }
         });
         tileposition[StartPos].style.background = '#2baa3cff';
         tileposition[endPos].style.background = '#aa2b2bff';
+        Player.style.left = tileposition[StartPos].offsetLeft + 'px';
+        Player.style.top = tileposition[StartPos].offsetTop + 'px';
     }
+
 
     function getNeighbors(pos) {
         const neigbors = [];
