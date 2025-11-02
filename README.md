@@ -6,9 +6,9 @@ First you have to walk a dark corridor - don't worry nothing scary here...
 - Then you will **encounter your first fight with a ghost**:
     - To attack click on the green sections of the colorful bar (It's it doesn't register inputs please wiggle your mouse a little bit or/and click for longer). 
         - The closer you are to the green bar's middle the more damage you will deal. 
-        - With each hit it will get smaller and smaller.
+        - With each succesful hit the green bar will get smaller and smaller.
     - If you miss the green bar, the game changes now its enemy's turn:
-        - The enemy will chance your mouse pointer / controler
+        - The enemy will chase your mouse pointer/controler.
         - If it touches you, you will recieve damage (quite high so be careful!)
     - Either of you can win by deapliting enemy's healt.
 - If you are able to win (which may be a challenge) you will **enter the underground**, its a random generated place where you encounter ghosts by walking around a labirynt (This part of the game is extremly laggy and unstable from my tests it worked 9/10 times, but sometimes the player could not move.)
