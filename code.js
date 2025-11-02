@@ -332,6 +332,9 @@
     const Menu = document.getElementById('Menu');
     Menubutton.onclick = function() {
         BGM.play();
+        setInterval(() => {
+            BGM.play();
+        }, 20000);
         Menu.style.display = 'none';
         start = true;
         Player.style.left = '10px';

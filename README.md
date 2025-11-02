@@ -1,5 +1,5 @@
 # Spooky
-You've been chosen for a dangerous mission! Deep in the underground there have been reports of people spotting ghosts! Your objective is clear: to eliminate all of the ghost in the underground! Stay sharp as the will scare you! Are you ready to face them?
+You've been chosen for a dangerous mission! Deep in the underground there have been reports of people spotting ghosts! Your objective is clear: to eliminate all of the ghost in the underground! Are you ready to face them?
 
 # Gameplay
 First you have to walk a dark corridor - don't worry nothing scary here...
