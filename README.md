@@ -4,7 +4,7 @@ You've been chosen for a dangerous mission! Deep in the underground there have b
 # Gameplay
 First you have to walk a dark corridor - don't worry nothing scary here...
 - Then you will **encounter your first fight with a ghost**:
-    - To attack click on the green sections of the colorful bar. 
+    - To attack click on the green sections of the colorful bar (It's it doesn't register inputs please wiggle your mouse a little bit or/and click for longer). 
         - The closer you are to the middle the more damage you will deal. 
         - With each hit it will get smaller and smaller.
     - If you miss the green bar, the game changes now its enemy's turn:
