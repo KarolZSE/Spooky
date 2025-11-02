@@ -7,17 +7,28 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <img id="jumpscare" src="Halloween Characters\Ghost\Png_animation\Ghost1.png" width="740px" height="900px">
 <div id="outside">
+    <div id="Menu" style="position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 50%; height: 75%; background: #FFFF; z-index: 10;">
+        <h1 style="font-family: Panic; font-size: 64px; padding: 0; margin: 0;">Ghost Fighter</h1>
+        <p id="textMenu" style="padding-left: 25%; padding-right: 25%; padding-bottom: 30px;">Hello, <input type="text" placeholder="Whats your name?" id="PlayerNameText">! You've been chosen for a dangerous mission! Deep in the underground there have been reports of people spotting ghosts! Your objective is clear: to eliminate all of the ghost in the underground! Stay sharp as the can scare you! Are you ready to face them? (please read the README before playing). <span style="position: relative; top: 30px; left: 5%; transform: translate(-5%);">PS. Go to the right!</span></p>
+        <div id="Menubutton" style="color: blue;">Start The game</div>
+    </div>
     <div id="tilegrid"></div>
     <div id="darkness"></div>
     <div id="Warning">Don't Come any closer!</div>
     <div id="PlayerOutside"></div>
+    <div class="Wall" style="width: 100%; height: 56%;"></div>
+    <div id="bridge">
+        <div style="position: absolute; left: 70%;" class="trigger"></div>
+    </div>
+    <div class="Wall" style="width: 100%; height: 16%; bottom: 0;"></div>
 </div>
 <div id="Container">
     <div id="Player">
-        <h1>PlayerName</h1>
-        <div id="YourLVL">21</div>
+        <h1 id="PlayerName">PlayerName</h1>
+        <div id="YourLVL"></div>
         <div id="Player_healtbar"><span id="Player_healt">100</span> / <span id="Player_max_healt">100</span></div>
     </div>
     <div id="fight">
@@ -25,13 +36,13 @@
         <div id="playerIMG"></div>
     </div>
     <div id="enemy">
-        <h1>EnemyName</h1>
-        <div id="EnemyLVL">2</div>
+        <h1>Ghost</h1>
+        <div id="EnemyLVL"></div>
         <div id="Enemy_healtbar"><span id="Enemy_healt">100</span> / <span id="Enemy_max_healt">100</span></div>
     </div>
     <div>
         <div style="width: 200px; color: white;">
-            <p id="DamageNotif">You attack dealing <span id="AttackDamage">1.00</span>HP!</p>
+            <p id="DamageNotif">You attack dealing <span id="AttackDamage">0.00</span>HP!</p>
         </div>
         <canvas id="GhostBar" width="200" height="50"></canvas>
     </div>

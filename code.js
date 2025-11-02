@@ -66,12 +66,12 @@
 
     let mousex = 0;
     let mousey = 0;
+    let start = false;
 
     const OLDparrent = GhostBar.parentElement;
     const outside = document.getElementById('outside');
     
     GhostBar.addEventListener("mousemove", (e) => {
-        
         const rect = GhostBar.getBoundingClientRect();
 
         mousex = e.clientX;
@@ -90,7 +90,10 @@
             if (b > 100) {
                 Player_healt.textContent = (Number(Player_healt.textContent) - (Math.random() * 2 + 1)).toFixed(2);
                 if (Number(Player_healt.textContent) <= 0) {
-                    console.log('You Lose!');
+                    draw = false;
+                    Menu.style.display = 'flex';
+                    document.getElementById('textMenu').textContent = "You've died! The ghost has scared you to death... You cannot continue...";
+                    Menubutton.style.display = 'none';
                 }
             };
 
@@ -103,8 +106,8 @@
                 FirstTime = UserClicks = false;
                 if (greensize <= 50) greensize += 10;
 
-                AttackDamage.textContent = (g * 2 * 40 / test).toFixed(2);
-                Enemy_healt.textContent = (Number(Enemy_healt.textContent) - (g * 2 * 40 / test)).toFixed(2);
+                AttackDamage.textContent = (g * 4 / test).toFixed(2);
+                Enemy_healt.textContent = (Number(Enemy_healt.textContent) - (g * 4 / test)).toFixed(2);
                 FitFontSize();
                 setTimeout(() => {
                     FirstTime = true;
@@ -115,6 +118,14 @@
                 document.getElementById('Container').style.display = '';
                 infight = false;
                 Warning.textContent = "You've survived, this time...";
+                document.getElementById('tilegrid').style.display = 'grid';
+                document.getElementById('bridge').style.display = 'none';
+                const tileRect = tileposition[StartPos].getBoundingClientRect();
+                const outsideRect = outside.getBoundingClientRect();
+                Player.style.left = (tileRect.left - outsideRect.left) + 'px';
+                Player.style.top = (tileRect.top - outsideRect.top) + 'px';
+                OldX = Player.offsetLeft;
+                OldY = Player.offsetTop;
             }
 
             if (r === 255) {
@@ -172,7 +183,6 @@
     });
 
     function DrawAndMoveCircle(xc, yc) {
-        /*
         if (draw) return;
         GhostBarCont.fillStyle = '#000000';
         GhostBarCont.fillRect(0, 0, GhostBar.width, GhostBar.height);
@@ -204,13 +214,13 @@
             } else yc += 3;
             DrawAndMoveCircle(xc, yc);  
         }, 10);
-        */
     }
 
     const Player = document.getElementById('PlayerOutside');
 
     const jumpscare = document.getElementById("jumpscare");
     const BGM = new Audio('backgroundmusic.mp3');
+    const Scary = new Audio('scary_scream.mp3');
 
     const darkness = document.getElementById('darkness')
 
@@ -218,17 +228,19 @@
     let lastChange = 0;
     let change = 1;
     let infight = false;
+    let OldX;
+    let OldY;
 
-    outside.addEventListener('mousemove', function(e) {
-        if (infight) return;
+    document.addEventListener('mousemove', function(e) {
+        if (infight || !start) return;
         let x = e.clientX - outside.offsetLeft - Player.offsetWidth / 2;
         let y = e.clientY - outside.offsetTop - Player.offsetHeight / 2;
 
         x = Math.max(0, Math.min(x, outside.offsetWidth - Player.offsetWidth));
         y = Math.max(0, Math.min(y, outside.offsetHeight - Player.offsetHeight));
 
-        let OldX = Player.offsetLeft;
-        let OldY = Player.offsetTop;
+        OldX = Player.offsetLeft;
+        OldY = Player.offsetTop;
 
         Player.style.left = x + 'px';
         Player.style.top = y + 'px';
@@ -247,10 +259,19 @@
             if (isColliding(e, Player)) {
                 Player.style.left = OldX + 'px';
                 Player.style.top = OldY + 'px';
+                console.log('Hi!');
                 tileCollided = true;
+            } else {
+                const now = Date.now();
+                if (now - lastChange > 100) {
+                    Player.style.backgroundPosition = `-${100 * slide++}px -400px`;
+                    if (slide >= 6) slide = 0;
+                    lastChange = now;
+                }
             }
         });
-            if (!wallCollieded && !tileCollided) {
+
+        if (!wallCollieded && !tileCollided) {
                 const now = Date.now();
                 if (now - lastChange > 100) {
                     Player.style.backgroundPosition = `-${100 * slide++}px -400px`;
@@ -267,6 +288,10 @@
 
         document.querySelectorAll('.trigger').forEach(e => {
             if (isColliding(e, Player)) {
+                Scary.play()
+                document.querySelectorAll('.Wall').forEach(e => {
+                    e.style.display = 'none';
+                });
                 // darkness.style.display = 'none';
                 jumpscare.style.display = 'inline';    
                 e.remove();
@@ -303,18 +328,24 @@
         );
     }
 
-    /*
     const Menubutton = document.getElementById('Menubutton');
+    const Menu = document.getElementById('Menu');
     Menubutton.onclick = function() {
         BGM.play();
+        Menu.style.display = 'none';
+        start = true;
+        Player.style.left = '10px';
+        Player.style.top = '450px';
+        document.getElementById('PlayerName').textContent = document.getElementById('PlayerNameText').value || 'Player';
     }
-        */
 
     const tilegrid = document.getElementById('tilegrid');
     const tileposition = [];
     const edgeIndex = [];
     const Cols = 12;
     const Rows = 7;
+
+    let StartPos = 0;
 
     function CreateRandomRoom() {
         tilegrid.innerHTML = ''
@@ -325,6 +356,9 @@
             for (let i = 0; i < Cols; i++) {
                 const tile = document.createElement('div');
                 tile.classList.add('tile');
+                
+                tile.style.position = 'relative';
+
                 tilegrid.appendChild(tile);
                 tileposition.push(tile);
                 if (i === 0 || i === Cols - 1 || j === 0 || j === Rows - 1) {
@@ -333,7 +367,7 @@
             }
         }
         
-        const StartPos = edgeIndex[Math.floor(Math.random() * edgeIndex.length)];
+        StartPos = edgeIndex[Math.floor(Math.random() * edgeIndex.length)];
 
         const startRow = Math.floor(StartPos / Cols);
         const startCol = StartPos % Cols;
@@ -378,8 +412,14 @@
         path.forEach(pos => {
             tileposition[pos].style.background = '#5c697f';
             tileposition[pos].classList.remove('tile');
-            if (Math.random() >= 0.9) {
+
+            if (Math.random() >= 0.5) {
                 const SpawnTrigger = document.createElement('div');
+
+                SpawnTrigger.style.position = 'absolute';
+                SpawnTrigger.style.left = '0px';
+                SpawnTrigger.style.top = '0px';
+
                 SpawnTrigger.style.width = '100px';
                 SpawnTrigger.style.height = '100px';
                 SpawnTrigger.style.background = '#000000';
@@ -389,8 +429,6 @@
         });
         tileposition[StartPos].style.background = '#2baa3cff';
         tileposition[endPos].style.background = '#aa2b2bff';
-        Player.style.left = tileposition[StartPos].offsetLeft + 'px';
-        Player.style.top = tileposition[StartPos].offsetTop + 'px';
     }
 
 
